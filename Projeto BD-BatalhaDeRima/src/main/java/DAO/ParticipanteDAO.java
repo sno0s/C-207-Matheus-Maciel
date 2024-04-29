@@ -1,26 +1,28 @@
 package DAO;
 
 import Model.Batalha;
-
+import Model.Participante;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class BatalhaDAO extends ConnectionDAO{
+public class ParticipanteDAO extends ConnectionDAO{
 
     //DAO - Data Access Object
     boolean sucesso = false; //Para saber se funcionou
 
     //INSERT
-    public boolean insertBatalha(Batalha batalha) {
+    public boolean insertParticipante(Participante participante) {
 
         connectToDB();
 
-        String sql = "INSERT INTO Batalha (nome, local, diaDaSemana) values(?,?,?)";
+        String sql = "INSERT INTO Participante (nome, idade, vulgo, estado, idParticipante) values(?,?,?,?,?)";
         try {
             pst = con.prepareStatement(sql);
-            pst.setString(2,batalha.getLocal());
-            pst.setString(1, batalha.getNome());
-            pst.setString(3, batalha.getDiaDaSemana());
+            pst.setString(1,participante.getNome());
+            pst.setString(2, participante.getIdade());
+            pst.setString(3, participante.getVulgo());
+            pst.setString(4, participante.getEstado());
+            pst.setInt(5, participante.getParticipanteId());
             pst.execute();
             sucesso = true;
         } catch (SQLException exc) {
@@ -121,4 +123,3 @@ public class BatalhaDAO extends ConnectionDAO{
         return batalha;
     }
 }
-

@@ -33,4 +33,8 @@ public class Participante {
     public int getParticipanteId() {
         return participanteId;
     }
+
+    public String getEstado() {
+        return estado;
+    }
 }
