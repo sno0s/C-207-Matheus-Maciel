@@ -1,23 +1,25 @@
 package Model;
 
 public class Participante {
+    //Atributos
+    private static int idParticipante;
     private String nome;
+    private int idade;
     private String vulgo;
-    private String idade;
     private String estado;
-    private int participanteId;
-    private static int id;
 
-
-    public Participante(String nome, String vulgo, String idade, String estado) {
+    //Construtores
+    public Participante(String nome, String vulgo, int idade, String estado) {
         this.nome = nome;
         this.vulgo = vulgo;
         this.idade = idade;
         this.estado = estado;
-        id+=1;
-        this.participanteId = this.id;
+        idParticipante+=1;
+    }
+    public Participante() {
     }
 
+    //Getters & Setters
     public String getNome() {
         return nome;
     }
@@ -26,12 +28,12 @@ public class Participante {
         return vulgo;
     }
 
-    public String getIdade() {
+    public int getIdade() {
         return idade;
     }
 
     public int getParticipanteId() {
-        return participanteId;
+        return idParticipante;
     }
 
     public String getEstado() {

@@ -4,16 +4,14 @@ public class Batalha {
     private String nome;
     private String local;
     private String diaDaSemana;
-
-    private static int id;
+    private static int idBatalha;
 
     public Batalha(String nome, String local, String diaDaSemana) {
         this.nome = nome;
         this.local = local;
         this.diaDaSemana = diaDaSemana;
-        id+=1;
+        idBatalha+=1;
     }
-
 
     public String getDiaDaSemana() {
         return diaDaSemana;
@@ -32,6 +30,6 @@ public class Batalha {
     }
 
     public static int getId() {
-        return id;
+        return idBatalha;
     }
 }
