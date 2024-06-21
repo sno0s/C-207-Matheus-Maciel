@@ -100,7 +100,7 @@ public class ParticipanteDAO extends ConnectionDAO{
 
             while (rs.next()) {
 
-                Participante participanteAux = new Participante(rs.getString("nome"), rs.getString("vulgo"), rs.getInt("idade"), rs.getString("estado"), rs.getInt("id"));
+                Participante participanteAux = new Participante(rs.getString("nome"), rs.getString("vulgo"), rs.getInt("idade"), rs.getString("estado"), rs.getInt("idParticipante"));
 
                 System.out.println("Nome do mc: " + participanteAux.getNome());
                 System.out.println("Vulgo: " + participanteAux.getVulgo());

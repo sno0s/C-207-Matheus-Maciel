@@ -5,13 +5,13 @@ public class Edicao {
     private int idEdicao;
     private int numEdicao;
     private String data;
-    private String Batalha_nome;
+    private int idBatalha;
     //Construtores
-    public Edicao(int idEdicao, int numEdicao, String data, String batalha_nome) {
+    public Edicao(int idEdicao, int numEdicao, String data, int idBatalha) {
         this.idEdicao = idEdicao;
         this.numEdicao = numEdicao;
         this.data = data;
-        Batalha_nome = batalha_nome;
+        this.idBatalha = idBatalha;
     }
     public Edicao() {
     }
@@ -41,11 +41,11 @@ public class Edicao {
         this.data = data;
     }
 
-    public String getBatalha_nome() {
-        return Batalha_nome;
+    public int getIdBatalha() {
+        return idBatalha;
     }
 
-    public void setBatalha_nome(String batalha_nome) {
-        Batalha_nome = batalha_nome;
+    public void setIdBatalha(int idBatalha) {
+        this.idBatalha = idBatalha;
     }
 }

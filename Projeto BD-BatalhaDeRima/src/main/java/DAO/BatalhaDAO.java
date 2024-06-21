@@ -99,10 +99,11 @@ public class BatalhaDAO extends ConnectionDAO{
 
             while (rs.next()) {
 
-                Batalha batalhaAux = new Batalha(rs.getString("nome"), rs.getString("local"), rs.getString("diaDaSemana"), rs.getInt("idBatalha"));
+                Batalha batalhaAux = new Batalha(rs.getString("nome"), rs.getString("local"), rs.getString("Estado"), rs.getString("diaDaSemana"), rs.getInt("idBatalha"));
 
                 System.out.println("Nome da batalha: " + batalhaAux.getNome());
                 System.out.println("Local: " + batalhaAux.getLocal());
+                System.out.println("Estado: " + batalhaAux.getEstado());
                 System.out.println("Dia da semana: " + batalhaAux.getDiaDaSemana());
                 System.out.println("Id: " + batalhaAux.getId());
 
@@ -121,6 +122,49 @@ public class BatalhaDAO extends ConnectionDAO{
             }
         }
         return batalha;
+    }
+
+    public ArrayList<Batalha> selectBatalhaPorEstado(String estado1) {
+        ArrayList<Batalha> batalhas = new ArrayList<>();
+        connectToDB();
+        String sql = "SELECT * FROM Batalha WHERE estado=?";
+
+        try {
+            pst = con.prepareStatement(sql);
+            pst.setString(1, estado1);
+            rs = pst.executeQuery();
+
+            System.out.println("\n----->Batalhas de rima listadas: ");
+
+            while (rs.next()) {
+                Batalha batalhaAux = new Batalha(
+                        rs.getString("nome"),
+                        rs.getString("local"),
+                        rs.getString("estado"),  // Corrigido para estado em minúsculas
+                        rs.getString("diaDaSemana"),
+                        rs.getInt("idBatalha")
+                );
+
+                System.out.println("Nome da batalha: " + batalhaAux.getNome());
+                System.out.println("Local: " + batalhaAux.getLocal());
+                System.out.println("Estado: " + batalhaAux.getEstado());
+                System.out.println("Dia da semana: " + batalhaAux.getDiaDaSemana());
+                System.out.println("Id: " + batalhaAux.getId());
+
+                batalhas.add(batalhaAux);
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                System.out.println("Erro ao fechar recursos: " + e.getMessage());
+            }
+        }
+        return batalhas;
     }
 }
 
