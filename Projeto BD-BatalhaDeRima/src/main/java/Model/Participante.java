@@ -2,19 +2,19 @@ package Model;
 
 public class Participante {
     //Atributos
-    private static int idParticipante;
+    private int idParticipante;
     private String nome;
     private int idade;
     private String vulgo;
     private String estado;
 
     //Construtores
-    public Participante(String nome, String vulgo, int idade, String estado) {
+    public Participante(String nome, String vulgo, int idade, String estado, int idParticipante) {
         this.nome = nome;
         this.vulgo = vulgo;
         this.idade = idade;
         this.estado = estado;
-        idParticipante+=1;
+        this.idParticipante = idParticipante;
     }
     public Participante() {
     }

@@ -19,7 +19,7 @@ public class ParticipanteDAO extends ConnectionDAO{
         try {
             pst = con.prepareStatement(sql);
             pst.setString(1,participante.getNome());
-            pst.setString(2, participante.getIdade());
+            pst.setInt(2, participante.getIdade());
             pst.setString(3, participante.getVulgo());
             pst.setString(4, participante.getEstado());
             pst.setInt(5, participante.getParticipanteId());
@@ -40,9 +40,9 @@ public class ParticipanteDAO extends ConnectionDAO{
     }
 
     //UPDATE
-    public boolean updateBatalhaNome(String nomeAntigo, String nomeNovo) {
+    public boolean updateNomeParticipante(String nomeAntigo, String nomeNovo) {
         connectToDB();
-        String sql = "UPDATE Alunos SET nomeNovo=? where nomeAntigo=?";
+        String sql = "UPDATE Participante SET nomeNovo=? where nomeAntigo=?";
         try {
             pst = con.prepareStatement(sql);
             pst.setString(1, nomeAntigo);
@@ -64,9 +64,9 @@ public class ParticipanteDAO extends ConnectionDAO{
     }
 
     //DELETE
-    public boolean deleteBatalha(String nome) {
+    public boolean deleteParticipante(String nome) {
         connectToDB();
-        String sql = "DELETE FROM Batalha where nome=?";
+        String sql = "DELETE FROM Participante where nome=?";
         try {
             pst = con.prepareStatement(sql);
             pst.setString(1, nome);
@@ -87,26 +87,27 @@ public class ParticipanteDAO extends ConnectionDAO{
     }
 
     //SELECT
-    public ArrayList<Batalha> selectBatalha() {
-        ArrayList<Batalha> batalha = new ArrayList<>();
+    public ArrayList<Participante> selectParticipante() {
+        ArrayList<Participante> participantes = new ArrayList<>();
         connectToDB();
-        String sql = "SELECT * FROM Batalha";
+        String sql = "SELECT * FROM Participante";
 
         try {
             st = con.createStatement();
             rs = st.executeQuery(sql);
 
-            System.out.println("\n----->Batalhas de rima listadas: ");
+            System.out.println("\n----->Listando todos os MC's De batalha cadastrados: ");
 
             while (rs.next()) {
 
-                Batalha batalhaAux = new Batalha(rs.getString("nome"), rs.getString("local"), rs.getString("diaDaSemana"));
+                Participante participanteAux = new Participante(rs.getString("nome"), rs.getString("vulgo"), rs.getInt("idade"), rs.getString("estado"), rs.getInt("id"));
 
-                System.out.println("Nome da batalha: " + batalhaAux.getNome());
-                System.out.println("Local: " + batalhaAux.getLocal());
-                System.out.println("Dia da semana: " + batalhaAux.getDiaDaSemana());
-
-                batalha.add(batalhaAux);
+                System.out.println("Nome do mc: " + participanteAux.getNome());
+                System.out.println("Vulgo: " + participanteAux.getVulgo());
+                System.out.println("Idade: " + participanteAux.getIdade());
+                System.out.println("Estado: " + participanteAux.getEstado());
+                System.out.println("Id: " + participanteAux.getParticipanteId());
+                participantes.add(participanteAux);
             }
             sucesso = true;
         } catch (SQLException e) {
@@ -120,6 +121,6 @@ public class ParticipanteDAO extends ConnectionDAO{
                 System.out.println("Erro: " + e.getMessage());
             }
         }
-        return batalha;
+        return participantes;
     }
 }

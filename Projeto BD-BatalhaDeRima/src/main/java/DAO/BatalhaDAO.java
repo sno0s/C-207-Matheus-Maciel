@@ -15,12 +15,13 @@ public class BatalhaDAO extends ConnectionDAO{
 
         connectToDB();
 
-        String sql = "INSERT INTO Batalha (nome, local, diaDaSemana) values(?,?,?)";
+        String sql = "INSERT INTO Batalha (nome, local, diaDaSemana, idBatalha) values(?,?,?,?)";
         try {
             pst = con.prepareStatement(sql);
             pst.setString(2,batalha.getLocal());
             pst.setString(1, batalha.getNome());
             pst.setString(3, batalha.getDiaDaSemana());
+            pst.setInt(4, batalha.getId());
             pst.execute();
             sucesso = true;
         } catch (SQLException exc) {
@@ -98,11 +99,12 @@ public class BatalhaDAO extends ConnectionDAO{
 
             while (rs.next()) {
 
-                Batalha batalhaAux = new Batalha(rs.getString("nome"), rs.getString("local"), rs.getString("diaDaSemana"));
+                Batalha batalhaAux = new Batalha(rs.getString("nome"), rs.getString("local"), rs.getString("diaDaSemana"), rs.getInt("idBatalha"));
 
                 System.out.println("Nome da batalha: " + batalhaAux.getNome());
                 System.out.println("Local: " + batalhaAux.getLocal());
                 System.out.println("Dia da semana: " + batalhaAux.getDiaDaSemana());
+                System.out.println("Id: " + batalhaAux.getId());
 
                 batalha.add(batalhaAux);
             }
