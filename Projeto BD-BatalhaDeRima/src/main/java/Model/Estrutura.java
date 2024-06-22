@@ -1,11 +1,11 @@
 package Model;
 
 public class Estrutura {
-    private boolean coberto;
-    private boolean microfone;
+    private int coberto;
+    private int microfone;
     private int idBatalha;
 
-    public Estrutura(boolean coberto, boolean microfone, int idBatalha) {
+    public Estrutura(int coberto, int microfone, int idBatalha) {
         this.coberto = coberto;
         this.microfone = microfone;
         this.idBatalha = idBatalha;
@@ -14,19 +14,19 @@ public class Estrutura {
     public Estrutura() {
     }
 
-    public boolean isCoberto() {
+    public int getCoberto() {
         return coberto;
     }
 
-    public void setCoberto(boolean coberto) {
+    public void setCoberto(int coberto) {
         this.coberto = coberto;
     }
 
-    public boolean isMicrofone() {
+    public int getMicrofone() {
         return microfone;
     }
 
-    public void setMicrofone(boolean microfone) {
+    public void setMicrofone(int microfone) {
         this.microfone = microfone;
     }
 

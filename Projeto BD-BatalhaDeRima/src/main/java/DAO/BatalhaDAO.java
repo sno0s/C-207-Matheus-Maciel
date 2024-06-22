@@ -9,19 +9,21 @@ public class BatalhaDAO extends ConnectionDAO{
 
     //DAO - Data Access Object
     boolean sucesso = false; //Para saber se funcionou
+    //BATALHADAO TUDO CERTO
 
     //INSERT
-    public boolean insertBatalha(Batalha batalha) {
+    public boolean insertBatalha(Batalha batalha, String user, String senha) {
 
-        connectToDB();
+        connectLikeAdmin(user, senha);
 
-        String sql = "INSERT INTO Batalha (nome, local, diaDaSemana, idBatalha) values(?,?,?,?)";
+        String sql = "INSERT INTO Batalha (nome, local, estado, diaDaSemana, idBatalha) values(?,?,?,?,?)";
         try {
             pst = con.prepareStatement(sql);
-            pst.setString(2,batalha.getLocal());
             pst.setString(1, batalha.getNome());
-            pst.setString(3, batalha.getDiaDaSemana());
-            pst.setInt(4, batalha.getId());
+            pst.setString(2,batalha.getLocal());
+            pst.setString(3, batalha.getEstado());
+            pst.setString(4, batalha.getDiaDaSemana());
+            pst.setInt(5, batalha.getId());
             pst.execute();
             sucesso = true;
         } catch (SQLException exc) {
@@ -39,13 +41,15 @@ public class BatalhaDAO extends ConnectionDAO{
     }
 
     //UPDATE
-    public boolean updateBatalhaNome(String nomeAntigo, String nomeNovo) {
-        connectToDB();
-        String sql = "UPDATE Alunos SET nomeNovo=? where nomeAntigo=?";
+    public boolean updateBatalhaNome(String novoNome, String novoLocal, String novoEstado, String novoDiaDaSemana, int idBatalha, String user, String senha) {
+        connectLikeAdmin(user, senha);
+        String sql = "UPDATE Batalha SET nome=?, local=?, estado=?, diaDaSemana=? where idBatalha=?";
         try {
             pst = con.prepareStatement(sql);
-            pst.setString(1, nomeAntigo);
-            pst.setString(2, nomeNovo);
+            pst.setString(1, novoNome);
+            pst.setString(2, novoLocal);
+            pst.setString(3, novoEstado);
+            pst.setString(4, novoDiaDaSemana);
             pst.execute();
             sucesso = true;
         } catch (SQLException ex) {
@@ -63,27 +67,53 @@ public class BatalhaDAO extends ConnectionDAO{
     }
 
     //DELETE
-    public boolean deleteBatalha(String nome) {
-        connectToDB();
-        String sql = "DELETE FROM Batalha where nome=?";
+    public boolean deleteBatalha(int id, String user, String senha) {
+        connectLikeAdmin(user, senha);
+        boolean sucesso = false;
+
         try {
-            pst = con.prepareStatement(sql);
-            pst.setString(1, nome);
-            pst.execute();
+            // Desabilitar auto-commit para iniciar uma transação
+            con.setAutoCommit(false);
+
+            // Primeira instrução DELETE para a tabela Estrutura
+            String sqlEstrutura = "DELETE FROM Estrutura WHERE idBatalha = ?";
+            pst = con.prepareStatement(sqlEstrutura);
+            pst.setInt(1, id);
+            pst.executeUpdate();
+            pst.close();
+
+            // Segunda instrução DELETE para a tabela Batalha
+            String sqlBatalha = "DELETE FROM Batalha WHERE idBatalha = ?";
+            pst = con.prepareStatement(sqlBatalha);
+            pst.setInt(1, id);
+            pst.executeUpdate();
+            pst.close();
+
+            // Commit da transação se ambas as operações forem bem-sucedidas
+            con.commit();
             sucesso = true;
         } catch (SQLException ex) {
-            System.out.println("Erro = " + ex.getMessage());
+            // Rollback em caso de erro
+            try {
+                con.rollback();
+                System.out.println("Erro = " + ex.getMessage());
+            } catch (SQLException rollbackEx) {
+                System.out.println("Erro no rollback: " + rollbackEx.getMessage());
+            }
             sucesso = false;
         } finally {
+            // Restaurar o auto-commit e fechar os recursos
             try {
-                con.close();
-                pst.close();
+                con.setAutoCommit(true);
+                if (pst != null) pst.close();
+                if (con != null) con.close();
             } catch (SQLException exc) {
                 System.out.println("Erro: " + exc.getMessage());
             }
         }
         return sucesso;
     }
+
 
     //SELECT
     public ArrayList<Batalha> selectBatalha() {

@@ -13,6 +13,7 @@ public class EdicaoDAO extends ConnectionDAO {
     //DAO - Data Access Object
     boolean sucesso = false; //Para saber se funcionou
 
+    //EDICAODAO TUDO CERTO
     //INSERT
     public boolean insertEdicao(Edicao edicao) {
 
@@ -42,12 +43,13 @@ public class EdicaoDAO extends ConnectionDAO {
     }
 
     //DELETE
-    public boolean deleteEdicao(int numEdicao) {
+    public boolean deleteEdicao(int numEdicao, int idBatalha) {
         connectToDB();
-        String sql = "DELETE FROM Edicao where numEdicao=?";
+        String sql = "DELETE FROM Edicao where numEdicao=? and idBatalha=?";
         try {
             pst = con.prepareStatement(sql);
             pst.setInt(1, numEdicao);
+            pst.setInt(2, idBatalha);
             pst.execute();
             sucesso = true;
         } catch (SQLException ex) {
@@ -88,6 +90,61 @@ public class EdicaoDAO extends ConnectionDAO {
         try {
             pst = con.prepareStatement(sql);
             pst.setString(1, nomeBatalha);
+            rs = pst.executeQuery();
+
+            while (rs.next()) {
+                Edicao edicaoAux = new Edicao(
+                        rs.getInt("idEdicao"),
+                        rs.getInt("numEdicao"),
+                        rs.getString("data"),
+                        rs.getInt("idBatalha")
+                );
+
+                String batalhaNome = rs.getString("Batalha");
+                String vencedorNome = rs.getString("Vencedor");
+
+                System.out.println("\nEdição: " + edicaoAux.getNumEdicao());
+                System.out.println("Data: " + edicaoAux.getData());
+                System.out.println("Batalha: " + batalhaNome);
+                System.out.println("Vencedor: " + vencedorNome);
+
+                edicoes.add(edicaoAux);
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                System.out.println("Erro ao fechar recursos: " + e.getMessage());
+            }
+        }
+        return edicoes;
+    }
+
+    public ArrayList<Edicao> selectVencedoresTodasEdicoes() {
+        ArrayList<Edicao> edicoes = new ArrayList<>();
+        connectToDB();
+        String sql = "SELECT " +
+                "    Edicao.idEdicao AS idEdicao, " +
+                "    Edicao.numEdicao AS numEdicao, " +
+                "    Edicao.data AS data, " +
+                "    Edicao.idBatalha AS idBatalha, " +
+                "    Batalha.nome AS Batalha, " +
+                "    Participante.vulgo AS Vencedor " +
+                "FROM " +
+                "    Edicao " +
+                "INNER JOIN " +
+                "    Batalha ON Edicao.idBatalha = Batalha.idBatalha " +
+                "INNER JOIN " +
+                "    Vencedores ON Edicao.idEdicao = Vencedores.idEdicao " +
+                "INNER JOIN " +
+                "    Participante ON Vencedores.idParticipante = Participante.idParticipante ";
+
+        try {
+            pst = con.prepareStatement(sql);
             rs = pst.executeQuery();
 
             while (rs.next()) {

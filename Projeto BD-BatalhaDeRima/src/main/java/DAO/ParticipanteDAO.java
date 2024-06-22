@@ -64,7 +64,7 @@ public class ParticipanteDAO extends ConnectionDAO{
     }
 
     //DELETE
-    public boolean deleteParticipante(String nome) {
+    public boolean deleteParticipanteByNome(String nome) {
         connectToDB();
         String sql = "DELETE FROM Participante where nome=?";
         try {
@@ -86,6 +86,61 @@ public class ParticipanteDAO extends ConnectionDAO{
         return sucesso;
     }
 
+    public boolean deleteParticipante(int idParticipante, String user, String senha) {
+        connectLikeAdmin(user, senha);
+        boolean sucesso = false;
+
+        try {
+            // Desabilitar auto-commit para iniciar uma transação
+            con.setAutoCommit(false);
+
+            // Primeira instrução DELETE para a tabela Edicao_has_Participante
+            String sqlEdicaoHasParticipante = "DELETE FROM Edicao_has_Participante WHERE idParticipante = ?";
+            pst = con.prepareStatement(sqlEdicaoHasParticipante);
+            pst.setInt(1, idParticipante);
+            pst.executeUpdate();
+            pst.close();
+
+            // Segunda instrução DELETE para a tabela Vencedores
+            String sqlVencedores = "DELETE FROM Vencedores WHERE idParticipante = ?";
+            pst = con.prepareStatement(sqlVencedores);
+            pst.setInt(1, idParticipante);
+            pst.executeUpdate();
+            pst.close();
+
+            // Terceira instrução DELETE para a tabela Participante
+            String sqlParticipante = "DELETE FROM Participante WHERE idParticipante = ?";
+            pst = con.prepareStatement(sqlParticipante);
+            pst.setInt(1, idParticipante);
+            pst.executeUpdate();
+            pst.close();
+
+            // Commit da transação se todas as operações forem bem-sucedidas
+            con.commit();
+            sucesso = true;
+        } catch (SQLException ex) {
+            // Rollback em caso de erro
+            try {
+                con.rollback();
+                System.out.println("Erro = " + ex.getMessage());
+            } catch (SQLException rollbackEx) {
+                System.out.println("Erro no rollback: " + rollbackEx.getMessage());
+            }
+            sucesso = false;
+        } finally {
+            // Restaurar o auto-commit e fechar os recursos
+            try {
+                con.setAutoCommit(true);
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (SQLException exc) {
+                System.out.println("Erro: " + exc.getMessage());
+            }
+        }
+        return sucesso;
+    }
+
+
     //SELECT
     public ArrayList<Participante> selectParticipante() {
         ArrayList<Participante> participantes = new ArrayList<>();
@@ -106,7 +161,7 @@ public class ParticipanteDAO extends ConnectionDAO{
                 System.out.println("Vulgo: " + participanteAux.getVulgo());
                 System.out.println("Idade: " + participanteAux.getIdade());
                 System.out.println("Estado: " + participanteAux.getEstado());
-                System.out.println("Id: " + participanteAux.getParticipanteId());
+                System.out.println("Id: " + participanteAux.getParticipanteId() + "\n");
                 participantes.add(participanteAux);
             }
             sucesso = true;

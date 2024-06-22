@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS `BatalhaDeRima`.`Batalha` (
   `idBatalha` INT NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(45) NULL,
   `local` VARCHAR(45) NULL,
+  `estado` VARCHAR(45) NULL,
   `diaDaSemana` VARCHAR(45) NULL,
   PRIMARY KEY (`idBatalha`))
 ENGINE = InnoDB;
@@ -89,6 +90,29 @@ SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
+#criando usu[ario admin geral 
+create user 'adm' identified by 'admin';
+grant all privileges on batalhaderima.* to 'adm';
+#Ver todas as batalhas e suas informações
+select 
+	Batalha.nome as Nome,
+    Batalha.local as Local,
+    Batalha.estado as Estado,
+    Batalha.diaDaSemana as Dia_da_semana
+from
+	Batalha;
+
+#Ver todas as batalhas de um determinado estado
+select 
+	Batalha.nome as Nome,
+    Batalha.local as Local,
+    Batalha.estado as Estado,
+    Batalha.diaDaSemana as Dia_da_semana
+from
+	Batalha
+where 
+	batalha.estado = 'SP';
+
 #Mostrando os vencedores de todas as edições de uma batalha específica
 SELECT 
     Edicao.numEdicao as Edicao,
@@ -104,13 +128,30 @@ INNER JOIN
 INNER JOIN 
     Participante ON Vencedores.idParticipante = Participante.idParticipante
 WHERE 
-    Batalha.nome = 'Batalha da Aldeia';
+    Batalha.nome = 'Batalha da Leste';
+    
+#Mostrando todas as vitórias de um MC específico
+SELECT 
+    Edicao.numEdicao as Edicao,
+    Edicao.data as Data,
+    Batalha.nome AS Batalha,
+    Participante.vulgo AS Vencedor
+FROM 
+    Edicao
+INNER JOIN 
+    Batalha ON Edicao.idBatalha = Batalha.idBatalha
+INNER JOIN 
+    Vencedores ON Edicao.idEdicao = Vencedores.idEdicao
+INNER JOIN 
+    Participante ON Vencedores.idParticipante = Participante.idParticipante
+WHERE 
+    Participante.vulgo = 'Lil vi';
 
 #Criando Principais Batalhas
-Insert into Batalha (idBatalha, nome, local, diaDaSemana) values
-(1, 'Batalha Da Aldeia', 'Praça dos Estudantes de Barueri','Segunda-feira'),
-(2, 'Batalha Da Norte', 'Praça Margarida de Albuquerque Gimenez','Sexta-feira'),
-(3, 'Batalha Da Leste', 'Metrô Itaquera','Sábado');
+Insert into Batalha (idBatalha, nome, local, estado, diaDaSemana) values
+(1, 'Batalha Da Aldeia', 'Praça dos Estudantes de Barueri', 'SP','Segunda-feira'),
+(2, 'Batalha Da Norte', 'Praça Margarida de Albuquerque Gimenez','SP','Sexta-feira'),
+(3, 'Batalha Da Leste', 'Metrô Itaquera','SP','Sábado');
 
 #Criando participantes
 insert into Participante (idParticipante, nome, idade, vulgo, estado) values
@@ -128,9 +169,17 @@ insert into Participante (idParticipante, nome, idade, vulgo, estado) values
 insert into Edicao (idEdicao, numEdicao, data, idBatalha) values
 (1, 375, '10/06/2024', 1),
 (2, 374, '03/06/2024', 1),
-(3, 373, '27/05/2024', 1);
+(3, 373, '27/05/2024', 1),
+(4, 372, '24/05/2024', 2),
+(5, 371, '27/05/2024', 2),
+(6, 370, '24/05/2024', 3),
+(7, 369, '27/05/2024', 3);
 
 insert into Vencedores (idVencedores, idEdicao, idParticipante) values
 (1, 1, 1),
 (2, 2, 2),
-(3, 3, 3);
+(3, 3, 3),
+(4, 4, 1),
+(5, 5, 1),
+(6, 6, 1),
+(7, 7, 1);
