@@ -39,4 +39,8 @@ public class Participante {
     public String getEstado() {
         return estado;
     }
+
+    public void setVulgo(String vulgo) {
+        this.vulgo = vulgo;
+    }
 }

@@ -13,7 +13,7 @@ public class Edicao_has_ParticipanteDAO extends ConnectionDAO {
 
         connectLikeAdmin(user, senha);
 
-        String sql = "INSERT INTO Edicao_has_Participante (idEdicao, idParticipante) values(?,?)";
+        String sql = "INSERT INTO `BatalhaDeRima`.`Edicao_has_Participante` (idEdicao, idParticipante) values(?,?)";
         try {
             pst = con.prepareStatement(sql);
             pst.setInt(1, idEdicao);

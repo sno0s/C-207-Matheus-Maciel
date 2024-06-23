@@ -41,7 +41,7 @@ public class BatalhaDAO extends ConnectionDAO{
     }
 
     //UPDATE
-    public boolean updateBatalhaNome(String novoNome, String novoLocal, String novoEstado, String novoDiaDaSemana, int idBatalha, String user, String senha) {
+    public boolean updateBatalha(String novoNome, String novoLocal, String novoEstado, String novoDiaDaSemana, int idBatalha, String user, String senha) {
         connectLikeAdmin(user, senha);
         String sql = "UPDATE Batalha SET nome=?, local=?, estado=?, diaDaSemana=? where idBatalha=?";
         try {
@@ -50,6 +50,7 @@ public class BatalhaDAO extends ConnectionDAO{
             pst.setString(2, novoLocal);
             pst.setString(3, novoEstado);
             pst.setString(4, novoDiaDaSemana);
+            pst.setInt(5, idBatalha);
             pst.execute();
             sucesso = true;
         } catch (SQLException ex) {
@@ -196,5 +197,52 @@ public class BatalhaDAO extends ConnectionDAO{
         }
         return batalhas;
     }
+
+    public Batalha selectBatalhaPorNome(String nome, String user, String senha) {
+
+        connectLikeAdmin(user, senha);
+
+        String sql = "SELECT * FROM Batalha WHERE nome=?";
+        Batalha batalhaAux = null;
+
+        try {
+            pst = con.prepareStatement(sql);
+            pst.setString(1, nome);
+            rs = pst.executeQuery();
+
+            System.out.println("\n----->Informações antigas da batalha: ");
+
+            if (rs.next()) {  // Move o cursor para a primeira linha válida
+                batalhaAux = new Batalha(
+                        rs.getString("nome"),
+                        rs.getString("local"),
+                        rs.getString("estado"),
+                        rs.getString("diaDaSemana"),
+                        rs.getInt("idBatalha")
+                );
+
+                System.out.println("Nome antigo: " + batalhaAux.getNome());
+                System.out.println("Local antigo: " + batalhaAux.getLocal());
+                System.out.println("Estado antigo: " + batalhaAux.getEstado());
+                System.out.println("Dia da semana antigo: " + batalhaAux.getDiaDaSemana());
+                System.out.println("Id: " + batalhaAux.getId());
+            } else {
+                System.out.println("Nenhuma batalha encontrada com o nome: " + nome);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erro: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                System.out.println("Erro ao fechar recursos: " + e.getMessage());
+            }
+        }
+        return batalhaAux;
+    }
+
 }
 

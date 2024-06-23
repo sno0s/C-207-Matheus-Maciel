@@ -2,6 +2,8 @@ package DAO;
 
 import Model.Batalha;
 import Model.Participante;
+import Model.Vencedores;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -40,13 +42,17 @@ public class ParticipanteDAO extends ConnectionDAO{
     }
 
     //UPDATE
-    public boolean updateNomeParticipante(String nomeAntigo, String nomeNovo) {
-        connectToDB();
-        String sql = "UPDATE Participante SET nomeNovo=? where nomeAntigo=?";
+    public boolean updateNomeParticipante(String nome, int idade, String vulgo, String estado, int idParticipante, String user, String senha) {
+        connectLikeAdmin(user, senha);
+
+        String sql = "update Participante SET nome=?, idade=?, vulgo=?, estado=?  where idParticipante=?";
         try {
             pst = con.prepareStatement(sql);
-            pst.setString(1, nomeAntigo);
-            pst.setString(2, nomeNovo);
+            pst.setString(1, nome);
+            pst.setInt(2, idade);
+            pst.setString(3, vulgo);
+            pst.setString(4, estado);
+            pst.setInt(5, idParticipante);
             pst.execute();
             sucesso = true;
         } catch (SQLException ex) {
@@ -64,28 +70,6 @@ public class ParticipanteDAO extends ConnectionDAO{
     }
 
     //DELETE
-    public boolean deleteParticipanteByNome(String nome) {
-        connectToDB();
-        String sql = "DELETE FROM Participante where nome=?";
-        try {
-            pst = con.prepareStatement(sql);
-            pst.setString(1, nome);
-            pst.execute();
-            sucesso = true;
-        } catch (SQLException ex) {
-            System.out.println("Erro = " + ex.getMessage());
-            sucesso = false;
-        } finally {
-            try {
-                con.close();
-                pst.close();
-            } catch (SQLException exc) {
-                System.out.println("Erro: " + exc.getMessage());
-            }
-        }
-        return sucesso;
-    }
-
     public boolean deleteParticipante(int idParticipante, String user, String senha) {
         connectLikeAdmin(user, senha);
         boolean sucesso = false;
@@ -177,5 +161,86 @@ public class ParticipanteDAO extends ConnectionDAO{
             }
         }
         return participantes;
+    }
+
+    public Participante selectParticipanteByID(int idParticipante, String user, String senha) {
+
+        connectLikeAdmin(user, senha);
+
+        String sql = "SELECT nome FROM Participantes where idParticipante=?";
+        Participante participanteaux = null;
+
+        try {
+            pst = con.prepareStatement(sql);
+            pst.setInt(1, idParticipante);
+            rs = pst.executeQuery();
+
+            if (rs.next()) {  // Move o cursor para a primeira linha válida
+                participanteaux = new Participante(
+                        rs.getString("nome"),
+                        rs.getString("vulgo"),
+                        rs.getInt("idade"),
+                        rs.getString("estado"),
+                        rs.getInt("idParticipante")
+                );
+            } else {
+                System.out.println("Nenhum Participante encontrado com este ID.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erro: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                System.out.println("Erro ao fechar recursos: " + e.getMessage());
+            }
+        }
+        return participanteaux;
+    }
+
+    public Participante selectParticipanteToUpdate(int idParticipante, String user, String senha) {
+
+        connectLikeAdmin(user, senha);
+
+        String sql = "SELECT * FROM Participante where idParticipante=?";
+        Participante participanteaux = null;
+
+        try {
+            pst = con.prepareStatement(sql);
+            pst.setInt(1, idParticipante);
+            rs = pst.executeQuery();
+
+            if (rs.next()) {  // Move o cursor para a primeira linha válida
+                participanteaux = new Participante(
+                        rs.getString("nome"),
+                        rs.getString("vulgo"),
+                        rs.getInt("idade"),
+                        rs.getString("estado"),
+                        rs.getInt("idParticipante")
+                );
+                System.out.println("----->Informações antigas do participante: ");
+                System.out.println("Nome antigo: " + participanteaux.getNome());
+                System.out.println("Vulgo antigo: " + participanteaux.getVulgo());
+                System.out.println("Idade antiga: " + participanteaux.getIdade());
+                System.out.println("Estado antigo: " + participanteaux.getEstado());
+            } else {
+                System.out.println("Nenhum Participante encontrado com este ID.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erro: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pst != null) pst.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                System.out.println("Erro ao fechar recursos: " + e.getMessage());
+            }
+        }
+        return participanteaux;
     }
 }
