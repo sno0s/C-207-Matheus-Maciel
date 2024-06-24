@@ -48,26 +48,55 @@ public class EdicaoDAO extends ConnectionDAO {
     //DELETE
     public boolean deleteEdicao(int numEdicao, int idBatalha) {
         connectToDB();
-        String sql = "DELETE FROM Edicao where numEdicao=? and idBatalha=?";
+        String deleteVencedoresSql = "DELETE FROM Vencedores WHERE idEdicao IN (SELECT idEdicao FROM Edicao WHERE numEdicao=? AND idBatalha=?)";
+        String deleteEdicaoHasParticipanteSql = "DELETE FROM Edicao_has_Participante WHERE idEdicao IN (SELECT idEdicao FROM Edicao WHERE numEdicao=? AND idBatalha=?)";
+        String deleteEdicaoSql = "DELETE FROM Edicao WHERE numEdicao=? AND idBatalha=?";
+        boolean sucesso = false;
+
         try {
-            pst = con.prepareStatement(sql);
+            con.setAutoCommit(false); // Inicia a transação
+
+            // Deleta os vencedores relacionados
+            pst = con.prepareStatement(deleteVencedoresSql);
             pst.setInt(1, numEdicao);
             pst.setInt(2, idBatalha);
-            pst.execute();
+            pst.executeUpdate();
+            pst.close();
+
+            // Deleta os participantes relacionados
+            pst = con.prepareStatement(deleteEdicaoHasParticipanteSql);
+            pst.setInt(1, numEdicao);
+            pst.setInt(2, idBatalha);
+            pst.executeUpdate();
+            pst.close();
+
+            // Deleta a edição
+            pst = con.prepareStatement(deleteEdicaoSql);
+            pst.setInt(1, numEdicao);
+            pst.setInt(2, idBatalha);
+            pst.executeUpdate();
+            con.commit(); // Confirma a transação
             sucesso = true;
         } catch (SQLException ex) {
+            try {
+                con.rollback(); // Desfaz a transação em caso de erro
+            } catch (SQLException rollbackEx) {
+                System.out.println("Erro ao fazer rollback: " + rollbackEx.getMessage());
+            }
             System.out.println("Erro = " + ex.getMessage());
             sucesso = false;
         } finally {
             try {
-                con.close();
-                pst.close();
+                if (pst != null) pst.close();
+                if (con != null) con.close();
             } catch (SQLException exc) {
-                System.out.println("Erro: " + exc.getMessage());
+                System.out.println("Erro ao fechar recursos: " + exc.getMessage());
             }
         }
         return sucesso;
     }
+
+
 
     public ArrayList<Edicao> selectEdicaoVencedores(String nomeBatalha) {
         ArrayList<Edicao> edicoes = new ArrayList<>();
@@ -249,14 +278,14 @@ public class EdicaoDAO extends ConnectionDAO {
         return idedicao;
     }
 
-    public boolean updateEdicao(int numnovo, String datanova, int idBatalha, String user, String senha) {
+    public boolean updateEdicao(int numnovo, String datanova, int idEdicao, String user, String senha) {
         connectLikeAdmin(user, senha);
-        String sql = "UPDATE Edicao SET numEdicao=?, data=? where idBatalha=?";
+        String sql = "UPDATE Edicao SET numEdicao=?, data=? where idEdicao=?";
         try {
             pst = con.prepareStatement(sql);
             pst.setInt(1, numnovo);
             pst.setString(2, datanova);
-            pst.setInt(3, idBatalha);
+            pst.setInt(3, idEdicao);
             pst.execute();
             sucesso = true;
         } catch (SQLException ex) {

@@ -227,7 +227,7 @@ public class Main {
                                         case 2:
                                             System.out.print("Digite o número da edição: ");
                                             int numEdicao = entrada.nextInt();
-                                            System.out.println("Id da batalha: ");
+                                            System.out.print("Id da batalha: ");
                                             int idbatalha = entrada.nextInt();
                                             e.deleteEdicao(numEdicao, idbatalha);
                                             System.out.println("Edição deletada com sucesso!");
@@ -300,7 +300,7 @@ public class Main {
 
                                             Batalha baaux = b.selectBatalhaPorNome(nomeb, user, senha);
 
-                                            e.updateEdicao(numedicao, dataedicao, baaux.getId(), user, senha);
+                                            e.updateEdicao(numedicao, dataedicao, idEdicao, user, senha);
                                             v.updateVencedores(idvencedor, idEdicao, user, senha);
                                             System.out.println("\nEdição atualizada com sucesso!\n");
                                             break;
